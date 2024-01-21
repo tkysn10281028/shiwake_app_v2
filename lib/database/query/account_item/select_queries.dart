@@ -1,0 +1,18 @@
+class SelectQueries {
+  static const String getMAccountItem = "SELECT "
+      "MAI.ACCOUNT_ID"
+      ",MAI.DEBIT_CREDIT_DIV"
+      ",MAI.MAJOR_ITEM_ID"
+      ",MAI.MIDDLE_ITEM_ID"
+      ",MAMJI.MAJOR_ITEM_NAME"
+      ",MAMDI.MIDDLE_ITEM_NAME"
+      " FROM"
+      " M_ACCOUNT_ITEM MAI"
+      " INNER JOIN"
+      " M_ACCOUNT_MAJOR_ITEM MAMJI"
+      " ON MAI.MAJOR_ITEM_ID= MAMJI.MAJOR_ITEM_ID"
+      " INNER JOIN"
+      " M_ACCOUNT_MIDDLE_ITEM MAMDI"
+      " ON MAI.MAJOR_ITEM_ID= MAMDI.MAJOR_ITEM_ID"
+      " AND MAI.MIDDLE_ITEM_ID= MAMDI.MIDDLE_ITEM_ID";
+}

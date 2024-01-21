@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:shiwake_app_v2/database/query/account_item/insert_queries.dart';
 import 'package:shiwake_app_v2/database/query/database_create_queries.dart';
 import 'package:shiwake_app_v2/database/query/database_drop_queries.dart';
 import 'package:sqflite/sqflite.dart';
@@ -47,31 +48,23 @@ class DatabaseHelper {
   }
 
   Future<void> _createTable(Database db) async {
-    // 勘定科目テーブル作成
     await db.execute(DatabaseCreateQueries.createTableMAccountItem);
     await db.execute(DatabaseCreateQueries.createTableMAccountMajorItem);
     await db.execute(DatabaseCreateQueries.createTableMAccountMiddleItem);
-    // 勘定科目_ラベリングテーブル作成
     await db.execute(DatabaseCreateQueries.createTableTTransactionDef);
-    // 仕訳データテーブル作成
     await db.execute(DatabaseCreateQueries.createTableTJournalItem);
-    // 仕訳データ集計テーブル作成
     await db.execute(DatabaseCreateQueries.createTableTJournalTotal);
   }
 
   Future<void> _insertMAccountData(Database db) async {
     // データを投入
-    // await db.execute(DatabaseTransactionMAccountQueries.insertMAccountItem);
-    // await db
-    //     .execute(DatabaseTransactionMAccountQueries.insertMAccountMajorItem);
-    // await db
-    //     .execute(DatabaseTransactionMAccountQueries.insertMAccountMiddleItem);
+    await db.execute(InsertQueries.insertMAccountItem);
+    await db.execute(InsertQueries.insertMAccountMajorItem);
+    await db.execute(InsertQueries.insertMAccountMiddleItem);
   }
 
   Future<void> _insertInitialData(Database db) async {
     // データを投入
-    // await db.execute(
-    //     DatabaseTransactionTAccountLabelQueries.insertTAccountLabelTestData);
   }
 
   Future<void> close() async {
