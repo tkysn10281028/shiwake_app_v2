@@ -2,22 +2,22 @@ class DatabaseCreateQueries {
   static const String createTableMAccountItem =
       "CREATE TABLE IF NOT EXISTS M_ACCOUNT_ITEM"
       "("
-      "ACCOUNT_ID INTEGER PRIMARY KEY"
+      "ACCOUNT_ID TEXT PRIMARY KEY"
       ",DEBIT_CREDIT_DIV INTEGER"
-      ",MAJOR_ITEM_ID INTEGER"
-      ",MIDDLE_ITEM_ID INTEGER"
+      ",MAJOR_ITEM_ID TEXT"
+      ",MIDDLE_ITEM_ID TEXT"
       ")";
   static const String createTableMAccountMajorItem =
       "CREATE TABLE IF NOT EXISTS M_ACCOUNT_MAJOR_ITEM"
       "("
-      "MAJOR_ITEM_ID INTEGER PRIMARY KEY"
+      "MAJOR_ITEM_ID TEXT PRIMARY KEY"
       ",MAJOR_ITEM_NAME TEXT"
       ")";
   static const String createTableMAccountMiddleItem =
       "CREATE TABLE IF NOT EXISTS M_ACCOUNT_MIDDLE_ITEM"
       "("
-      "MIDDLE_ITEM_ID INTEGER"
-      ",MAJOR_ITEM_ID INTEGER"
+      "MIDDLE_ITEM_ID TEXT"
+      ",MAJOR_ITEM_ID TEXT"
       ",MIDDLE_ITEM_NAME TEXT"
       ",PRIMARY KEY (MIDDLE_ITEM_ID,MAJOR_ITEM_ID)"
       ")";
@@ -25,7 +25,7 @@ class DatabaseCreateQueries {
       "CREATE TABLE IF NOT EXISTS T_TRANSACTION_DEF"
       "("
       "TRANSACTION_DEF_ID TEXT"
-      ",ACCOUNT_ID INTEGER"
+      ",ACCOUNT_ID TEXT"
       ",PLUS_MINUS_DIV TEXT"
       ",TRANSACTION_NAME TEXT"
       ",SORT_ORDER INTEGER"
@@ -35,7 +35,7 @@ class DatabaseCreateQueries {
       "CREATE TABLE IF NOT EXISTS T_JOURNAL_ITEM"
       "("
       "JOURNAL_ID TEXT"
-      ",ACCOUNT_ID INTEGER"
+      ",ACCOUNT_ID TEXT"
       ",PLUS_MINUS_DIV TEXT"
       ",TRANSACTION_NAME TEXT"
       ",AMOUNT INTEGER"
@@ -48,7 +48,7 @@ class DatabaseCreateQueries {
   static const String createTableTJournalTotal =
       "CREATE TABLE IF NOT EXISTS T_JOURNAL_TOTAL"
       "("
-      "ACCOUNT_ID INTEGER"
+      "ACCOUNT_ID TEXT"
       ",CREATE_YM TEXT"
       ",AMOUNT INTEGER"
       ",PRIMARY KEY (ACCOUNT_ID,CREATE_YM)"

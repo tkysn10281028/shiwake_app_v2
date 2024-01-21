@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:shiwake_app_v2/api_test.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  ApiTest().testMAccountItem();
+  ApiTest().testTJournalItem();
+  ApiTest().testTTransactionDef();
+  ApiTest().testTJournalTotal();
+
   runApp(const MyApp());
 }
 
@@ -21,6 +28,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
+
   final String title;
 
   @override
