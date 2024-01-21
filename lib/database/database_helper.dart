@@ -1,9 +1,14 @@
 import 'dart:io';
-import 'package:shiwake_app_v2/database/query/account_item/insert_queries.dart';
+import 'package:shiwake_app_v2/database/query/account_item/account_item_insert_queries.dart';
 import 'package:shiwake_app_v2/database/query/database_create_queries.dart';
 import 'package:shiwake_app_v2/database/query/database_drop_queries.dart';
+import 'package:shiwake_app_v2/database/query/journal_item/journal_item_insert_queries.dart';
+import 'package:shiwake_app_v2/database/query/journal_total/journal_total_insert_queries.dart';
+import 'package:shiwake_app_v2/database/query/transaction_def/transaction_def_insert_queries.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+
+import '../conf/database_config.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
@@ -20,7 +25,7 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDB() async {
-    String path = join(await getDatabasesPath(), 'shiwake_db_v2');
+    String path = join(await getDatabasesPath(), DatabaseConfig.databaseName);
     if (await File(path).exists()) {
       await deleteDatabase(path);
     }
@@ -58,13 +63,16 @@ class DatabaseHelper {
 
   Future<void> _insertMAccountData(Database db) async {
     // データを投入
-    await db.execute(InsertQueries.insertMAccountItem);
-    await db.execute(InsertQueries.insertMAccountMajorItem);
-    await db.execute(InsertQueries.insertMAccountMiddleItem);
+    await db.execute(AccountItemInsertQueries.insertMAccountItem);
+    await db.execute(AccountItemInsertQueries.insertMAccountMajorItem);
+    await db.execute(AccountItemInsertQueries.insertMAccountMiddleItem);
   }
 
   Future<void> _insertInitialData(Database db) async {
     // データを投入
+    await db.execute(JournalItemInsertQueries.insertTJournalItemTestData);
+    await db.execute(TransactionDefInsertQueries.insertTAccountLabelTestData);
+    await db.execute(JournalTotalInsertQueries.insertTJournalTotalTestData);
   }
 
   Future<void> close() async {

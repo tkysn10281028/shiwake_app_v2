@@ -1,4 +1,4 @@
-class InsertQueries {
+class AccountItemInsertQueries {
   static const String insertMAccountItem = "INSERT INTO M_ACCOUNT_ITEM"
       "("
       "ACCOUNT_ID"
