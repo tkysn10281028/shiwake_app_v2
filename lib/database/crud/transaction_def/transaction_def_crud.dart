@@ -6,6 +6,7 @@ import 'package:shiwake_app_v2/database/query/transaction_def/transaction_def_in
 import 'package:shiwake_app_v2/database/query/transaction_def/transaction_def_update_queries.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../../utils/pair_list.dart';
 import '../../database_helper.dart';
 import '../../query/transaction_def/transaction_def_select_queries.dart';
 
@@ -27,10 +28,10 @@ class TransactionDefCrud {
   // 登録
   //--------------------------
   Future<void> insert(
-      List<TransactionDefInsertDto> transactionDefDtoList) async {
+      PairList<TransactionDefInsertDto> transactionDefDtoList) async {
     var count = await _getTTransactionDefCount();
     if (count < 50) {
-      _insertTTransactionDef(transactionDefDtoList);
+      await _insertTTransactionDef(transactionDefDtoList.getList());
       await updateSortOrderSerial();
     }
   }
@@ -70,7 +71,7 @@ class TransactionDefCrud {
   // 削除
   //--------------------------
   Future<void> delete(String transactionDefId) async {
-    _deleteTTransactionDef(transactionDefId);
+    await _deleteTTransactionDef(transactionDefId);
     await updateSortOrderSerial();
   }
 
@@ -85,7 +86,7 @@ class TransactionDefCrud {
   //--------------------------
   Future<void> updateSortOrder(TransactionDefUpdateSortOrderDto transactionDef1,
       TransactionDefUpdateSortOrderDto transactionDef2) async {
-    _updateTTransactionDefSortOrderById(transactionDef1, transactionDef2);
+    await _updateTTransactionDefSortOrderById(transactionDef1, transactionDef2);
     await updateSortOrderSerial();
   }
 

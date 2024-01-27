@@ -1,6 +1,7 @@
 import 'package:shiwake_app_v2/database/crud/journal_item/journal_item_crud.dart';
 import 'package:shiwake_app_v2/database/dto/transaction_def/transaction_def_insert_dto.dart';
 import 'package:shiwake_app_v2/database/service/transaction_def/transaction_def_service.dart';
+import 'package:shiwake_app_v2/utils/pair_list.dart';
 
 import 'database/crud/account_item/account_item_crud.dart';
 import 'database/crud/journal_total/journal_total_crud.dart';
@@ -15,7 +16,7 @@ class ApiTest {
   }
 
   Future<void> testTJournalItem() async {
-    var result = await JournalItemCrud.getResult(16, 0);
+    var result = await JournalItemCrud().getResult(16, 0);
     for (var res in result) {
       print(res);
     }
@@ -43,7 +44,7 @@ class ApiTest {
             plusMinusDiv: '＋$index',
             transactionName: 'test',
             accountId: '42da3b27-aedd-4d7c-cffc-108ddedebf70'));
-    await TransactionDefService().insert(dtoList);
+    await TransactionDefService().insert(PairList(dtoList));
   }
 
   Future<void> testTTransactionDefDelete() async {
