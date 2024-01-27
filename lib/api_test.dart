@@ -24,7 +24,7 @@ class ApiTest {
   Future<void> testTTransactionDef() async {
     var result = await TransactionDefCrud().getResult();
     for (var res in result) {
-      print(res['TRANSACTION_DEF_ID'] + '___' + res['SORT_ORDER'].toString());
+      print('${res.transactionDefId}___${res.sortOrder}');
     }
   }
 
@@ -53,18 +53,16 @@ class ApiTest {
   Future<void> testUpdateTTransactionDefSortOrder() async {
     var result = await TransactionDefCrud().getResult();
     var dto1 = result
-        .where((element) => element['TRANSACTION_DEF_ID'] == 'SYSTEM_ID_4')
+        .where((element) => element.transactionDefId == 'SYSTEM_ID_4')
         .map((e) {
       return TransactionDefUpdateSortOrderDto(
-          transactionDefId: e['TRANSACTION_DEF_ID'],
-          sortOrder: e['SORT_ORDER']);
+          transactionDefId: e.transactionDefId, sortOrder: e.sortOrder);
     }).first;
     var dto2 = result
-        .where((element) => element['TRANSACTION_DEF_ID'] == 'SYSTEM_ID_5')
+        .where((element) => element.transactionDefId == 'SYSTEM_ID_1')
         .map((e) {
       return TransactionDefUpdateSortOrderDto(
-          transactionDefId: e['TRANSACTION_DEF_ID'],
-          sortOrder: e['SORT_ORDER']);
+          transactionDefId: e.transactionDefId, sortOrder: e.sortOrder);
     }).first;
     await TransactionDefCrud().updateSortOrder(dto1, dto2);
   }

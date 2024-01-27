@@ -1,5 +1,6 @@
 import 'package:shiwake_app_v2/database/dto/transaction_def/transaction_def_insert_dto.dart';
 import 'package:shiwake_app_v2/database/dto/transaction_def/transaction_def_update_sort_order_dto.dart';
+import 'package:shiwake_app_v2/database/model/transaction_def/transaction_def_model.dart';
 import 'package:shiwake_app_v2/database/query/transaction_def/transaction_def_delete_queries.dart';
 import 'package:shiwake_app_v2/database/query/transaction_def/transaction_def_insert_queries.dart';
 import 'package:shiwake_app_v2/database/query/transaction_def/transaction_def_update_queries.dart';
@@ -12,9 +13,11 @@ class TransactionDefCrud {
   //--------------------------
   // 取得
   //--------------------------
-  Future<List<Map<String, dynamic>>> getResult() async {
+  Future<List<TransactionDefModel>> getResult() async {
     final db = await DatabaseHelper.instance.database;
-    return await db.rawQuery(TransactionDefSelectQueries.getTTransactionDef);
+    var result =
+        await db.rawQuery(TransactionDefSelectQueries.getTTransactionDef);
+    return result.map((res) => TransactionDefModel.fromMap(res)).toList();
   }
 
   //--------------------------
@@ -22,8 +25,18 @@ class TransactionDefCrud {
   //--------------------------
   Future<void> insert(
       List<TransactionDefInsertDto> transactionDefDtoList) async {
-    _insertTTransactionDef(transactionDefDtoList);
-    await updateSortOrderSerial();
+    var count = await _getTTransactionDefCount();
+    if (count < 50) {
+      _insertTTransactionDef(transactionDefDtoList);
+      await updateSortOrderSerial();
+    }
+  }
+
+  Future<int> _getTTransactionDefCount() async {
+    final db = await DatabaseHelper.instance.database;
+    var count =
+        await db.rawQuery(TransactionDefSelectQueries.getTTransactionDefCount);
+    return Sqflite.firstIntValue(count) ?? 0;
   }
 
   Future<void> _insertTTransactionDef(

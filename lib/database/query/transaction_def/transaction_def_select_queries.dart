@@ -33,4 +33,8 @@ class TransactionDefSelectQueries {
       " FROM"
       " T_TRANSACTION_DEF"
       " ORDER BY SORT_ORDER";
+  static const String getTTransactionDefCount = "SELECT"
+      " COUNT(DISTINCT TRANSACTION_DEF_ID)"
+      " FROM"
+      " T_TRANSACTION_DEF";
 }
