@@ -10,5 +10,20 @@ class JournalTotalInsertQueries {
       "('03b194f4-3b40-87f5-e014-c04e232c1cf7','202311',100000),"
       "('e7480c49-19b5-a638-9795-289ed58abdeb','202312',12345),"
       "('8e17fd4b-52b2-fcde-af5e-1522800f059f','202401',123456),"
-      "('cdc2c0cc-adea-044f-1180-c479f57ba62e','202401',1234567)";
+      "('cdc2c0cc-adea-044f-1180-c479f57ba62e','202401',1234567),"
+      "('d72a670b-d796-4938-dec3-984b236de80d','202401',0),"
+      "('8b922faa-d6a3-3fb1-1ca8-51c59f2c58a0','202401',0)";
+
+  static const String insertTJournalTotal = "INSERT INTO T_JOURNAL_TOTAL"
+      "("
+      "ACCOUNT_ID"
+      ",CREATE_YM"
+      ",AMOUNT"
+      ") VALUES ("
+      "?, ?, ?"
+      ")"
+      " ON CONFLICT (ACCOUNT_ID,CREATE_YM) "
+      " DO UPDATE SET "
+      "AMOUNT = AMOUNT + EXCLUDED.AMOUNT";
 }
+//

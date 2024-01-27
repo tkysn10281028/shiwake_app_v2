@@ -6,7 +6,7 @@ import 'package:shiwake_app_v2/database/query/transaction_def/transaction_def_in
 import 'package:shiwake_app_v2/database/query/transaction_def/transaction_def_update_queries.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../../utils/pair_list.dart';
+import '../../../utils/list/pair_list.dart';
 import '../../database_helper.dart';
 import '../../query/transaction_def/transaction_def_select_queries.dart';
 
@@ -15,13 +15,10 @@ class TransactionDefCrud {
   // 取得
   //--------------------------
   Future<List<TransactionDefModel>> getResult() async {
-    var result = await _getTTransactionDef();
-    return result.map((res) => TransactionDefModel.fromMap(res)).toList();
-  }
-
-  Future<List<Map<String, Object?>>> _getTTransactionDef() async {
     final db = await DatabaseHelper.instance.database;
-    return await db.rawQuery(TransactionDefSelectQueries.getTTransactionDef);
+    var result =
+        await db.rawQuery(TransactionDefSelectQueries.getTTransactionDef);
+    return result.map((res) => TransactionDefModel.fromMap(res)).toList();
   }
 
   //--------------------------
@@ -29,99 +26,99 @@ class TransactionDefCrud {
   //--------------------------
   Future<void> insert(
       PairList<TransactionDefInsertDto> transactionDefDtoList) async {
-    var count = await _getTTransactionDefCount();
-    if (count < 50) {
-      await _insertTTransactionDef(transactionDefDtoList.getList());
-      await updateSortOrderSerial();
-    }
-  }
-
-  Future<int> _getTTransactionDefCount() async {
     final db = await DatabaseHelper.instance.database;
-    var count =
-        await db.rawQuery(TransactionDefSelectQueries.getTTransactionDefCount);
-    return Sqflite.firstIntValue(count) ?? 0;
-  }
-
-  Future<void> _insertTTransactionDef(
-      List<TransactionDefInsertDto> transactionDefDtoList) async {
-    final db = await DatabaseHelper.instance.database;
-    var maxSortOrder = await _getTTransactionDefMaxSortOrder();
     await db.transaction((txn) async {
-      for (var transactionDefDto in transactionDefDtoList) {
-        await txn.rawInsert(TransactionDefInsertQueries.insertTTransactionDef, [
-          transactionDefDto.transactionDefId,
-          transactionDefDto.accountId,
-          transactionDefDto.plusMinusDiv,
-          transactionDefDto.transactionName,
-          maxSortOrder + 1
-        ]);
+      var count = await _getTTransactionDefCount(txn);
+      if (count < 50) {
+        await _insertTTransactionDef(transactionDefDtoList.getList(), txn);
+        await _updateSortOrderSerial(txn);
       }
     });
   }
 
-  Future<int> _getTTransactionDefMaxSortOrder() async {
-    final db = await DatabaseHelper.instance.database;
-    var maxSortOrder = await db
+  Future<int> _getTTransactionDefCount(Transaction txn) async {
+    var count =
+        await txn.rawQuery(TransactionDefSelectQueries.getTTransactionDefCount);
+    return Sqflite.firstIntValue(count) ?? 0;
+  }
+
+  Future<void> _insertTTransactionDef(
+      List<TransactionDefInsertDto> transactionDefDtoList,
+      Transaction txn) async {
+    var maxSortOrder = await _getTTransactionDefMaxSortOrder(txn);
+    for (var transactionDefDto in transactionDefDtoList) {
+      await txn.rawInsert(TransactionDefInsertQueries.insertTTransactionDef, [
+        transactionDefDto.transactionDefId,
+        transactionDefDto.accountId,
+        transactionDefDto.plusMinusDiv,
+        transactionDefDto.transactionName,
+        maxSortOrder + 1
+      ]);
+    }
+  }
+
+  Future<int> _getTTransactionDefMaxSortOrder(Transaction txn) async {
+    var maxSortOrder = await txn
         .rawQuery(TransactionDefSelectQueries.getTTransactionDefMaxSortOrder);
     return Sqflite.firstIntValue(maxSortOrder) ?? 0;
+  }
+
+  Future<void> _updateSortOrderSerial(Transaction txn) async {
+    var transactionDefList = await _getTTransactionDefSortOrderAndId(txn);
+    for (var i = 0; i < transactionDefList.length; i++) {
+      var transaction = transactionDefList[i];
+      await txn.rawUpdate(
+          TransactionDefUpdateQueries.updateTTransactionDefSortOrderById,
+          [i + 1, transaction['TRANSACTION_DEF_ID']]);
+    }
   }
 
   //--------------------------
   // 削除
   //--------------------------
   Future<void> delete(String transactionDefId) async {
-    await _deleteTTransactionDef(transactionDefId);
-    await updateSortOrderSerial();
+    final db = await DatabaseHelper.instance.database;
+    await db.transaction((txn) async {
+      await _deleteTTransactionDef(transactionDefId, txn);
+      await _updateSortOrderSerial(txn);
+    });
   }
 
-  Future<void> _deleteTTransactionDef(String transactionDefId) async {
-    final db = await DatabaseHelper.instance.database;
-    await db.rawDelete(
+  Future<void> _deleteTTransactionDef(
+      String transactionDefId, Transaction txn) async {
+    await txn.rawDelete(
         TransactionDefDeleteQueries.deleteTTransactionDef, [transactionDefId]);
   }
 
   //--------------------------
-  // 順番を更新
+  // 更新
+  // ・２取引定義の順番を入れ替え
   //--------------------------
   Future<void> updateSortOrder(TransactionDefUpdateSortOrderDto transactionDef1,
       TransactionDefUpdateSortOrderDto transactionDef2) async {
-    await _updateTTransactionDefSortOrderById(transactionDef1, transactionDef2);
-    await updateSortOrderSerial();
+    final db = await DatabaseHelper.instance.database;
+    await db.transaction((txn) async {
+      await _updateTTransactionDefSortOrderById(
+          transactionDef1, transactionDef2, txn);
+      await _updateSortOrderSerial(txn);
+    });
   }
 
   Future<void> _updateTTransactionDefSortOrderById(
       TransactionDefUpdateSortOrderDto transactionDef1,
-      TransactionDefUpdateSortOrderDto transactionDef2) async {
-    final db = await DatabaseHelper.instance.database;
-    await db.transaction((txn) async {
-      await txn.rawUpdate(
-          TransactionDefUpdateQueries.updateTTransactionDefSortOrderById,
-          [transactionDef1.sortOrder, transactionDef2.transactionDefId]);
-      await txn.rawUpdate(
-          TransactionDefUpdateQueries.updateTTransactionDefSortOrderById,
-          [transactionDef2.sortOrder, transactionDef1.transactionDefId]);
-    });
+      TransactionDefUpdateSortOrderDto transactionDef2,
+      Transaction txn) async {
+    await txn.rawUpdate(
+        TransactionDefUpdateQueries.updateTTransactionDefSortOrderById,
+        [transactionDef1.sortOrder, transactionDef2.transactionDefId]);
+    await txn.rawUpdate(
+        TransactionDefUpdateQueries.updateTTransactionDefSortOrderById,
+        [transactionDef2.sortOrder, transactionDef1.transactionDefId]);
   }
 
-  //--------------------------
-  // 順番を更新（連番振り直し）
-  //--------------------------
-  Future<void> updateSortOrderSerial() async {
-    var transactionDefList = await _getTTransactionDefSortOrderAndId();
-    final db = await DatabaseHelper.instance.database;
-    await db.transaction((txn) async {
-      transactionDefList.asMap().forEach((index, transaction) async {
-        await txn.rawUpdate(
-            TransactionDefUpdateQueries.updateTTransactionDefSortOrderById,
-            [index + 1, transaction['TRANSACTION_DEF_ID']]);
-      });
-    });
-  }
-
-  Future<List<Map<String, Object?>>> _getTTransactionDefSortOrderAndId() async {
-    final db = await DatabaseHelper.instance.database;
-    return await db
+  Future<List<Map<String, Object?>>> _getTTransactionDefSortOrderAndId(
+      Transaction txn) async {
+    return await txn
         .rawQuery(TransactionDefSelectQueries.getTTransactionDefSortOrderAndId);
   }
 }

@@ -1,4 +1,4 @@
-import '../../../utils/pair_list.dart';
+import '../../../utils/list/pair_list.dart';
 import '../../crud/transaction_def/transaction_def_crud.dart';
 import '../../dto/transaction_def/transaction_def_insert_dto.dart';
 import '../../dto/transaction_def/transaction_def_update_sort_order_dto.dart';
@@ -32,7 +32,8 @@ class TransactionDefService {
   }
 
   //--------------------------
-  // 順番を更新
+  // 更新
+  // ・２取引定義の順番を入れ替え
   //--------------------------
   Future<void> updateSortOrder(TransactionDefUpdateSortOrderDto transactionDef1,
       TransactionDefUpdateSortOrderDto transactionDef2) async {
