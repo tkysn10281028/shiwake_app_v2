@@ -6,7 +6,7 @@ import 'package:shiwake_app_v2/database/query/transaction_def/transaction_def_in
 import 'package:shiwake_app_v2/database/query/transaction_def/transaction_def_update_queries.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../../utils/pair_list.dart';
+import '../../../utils/list/pair_list.dart';
 import '../../database_helper.dart';
 import '../../query/transaction_def/transaction_def_select_queries.dart';
 
