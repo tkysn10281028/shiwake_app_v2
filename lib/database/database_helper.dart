@@ -71,7 +71,7 @@ class DatabaseHelper {
   Future<void> _insertInitialData(Database db) async {
     // データを投入
     await db.execute(JournalItemInsertQueries.insertTJournalItemTestData);
-    await db.execute(TransactionDefInsertQueries.insertTAccountLabelTestData);
+    await db.execute(TransactionDefInsertQueries.insertTTransactionDefTestData);
     await db.execute(JournalTotalInsertQueries.insertTJournalTotalTestData);
   }
 
