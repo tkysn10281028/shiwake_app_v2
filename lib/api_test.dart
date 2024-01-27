@@ -1,6 +1,6 @@
 import 'package:shiwake_app_v2/database/crud/journal_item/journal_item_crud.dart';
-import 'package:shiwake_app_v2/database/crud/transaction_def/transaction_def_crud.dart';
 import 'package:shiwake_app_v2/database/dto/transaction_def/transaction_def_insert_dto.dart';
+import 'package:shiwake_app_v2/database/service/transaction_def/transaction_def_service.dart';
 
 import 'database/crud/account_item/account_item_crud.dart';
 import 'database/crud/journal_total/journal_total_crud.dart';
@@ -22,7 +22,7 @@ class ApiTest {
   }
 
   Future<void> testTTransactionDef() async {
-    var result = await TransactionDefCrud().getResult();
+    var result = await TransactionDefService().getResult();
     for (var res in result) {
       print('${res.transactionDefId}___${res.sortOrder}');
     }
@@ -43,15 +43,15 @@ class ApiTest {
             plusMinusDiv: '＋$index',
             transactionName: 'test',
             accountId: '42da3b27-aedd-4d7c-cffc-108ddedebf70'));
-    await TransactionDefCrud().insert(dtoList);
+    await TransactionDefService().insert(dtoList);
   }
 
   Future<void> testTTransactionDefDelete() async {
-    await TransactionDefCrud().delete('SYSTEM_ID_6');
+    await TransactionDefService().delete('SYSTEM_ID_6');
   }
 
   Future<void> testUpdateTTransactionDefSortOrder() async {
-    var result = await TransactionDefCrud().getResult();
+    var result = await TransactionDefService().getResult();
     var dto1 = result
         .where((element) => element.transactionDefId == 'SYSTEM_ID_4')
         .map((e) {
@@ -64,6 +64,6 @@ class ApiTest {
       return TransactionDefUpdateSortOrderDto(
           transactionDefId: e.transactionDefId, sortOrder: e.sortOrder);
     }).first;
-    await TransactionDefCrud().updateSortOrder(dto1, dto2);
+    await TransactionDefService().updateSortOrder(dto1, dto2);
   }
 }

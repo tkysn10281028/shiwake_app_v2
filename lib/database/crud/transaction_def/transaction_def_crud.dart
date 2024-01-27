@@ -14,10 +14,13 @@ class TransactionDefCrud {
   // 取得
   //--------------------------
   Future<List<TransactionDefModel>> getResult() async {
-    final db = await DatabaseHelper.instance.database;
-    var result =
-        await db.rawQuery(TransactionDefSelectQueries.getTTransactionDef);
+    var result = await _getTTransactionDef();
     return result.map((res) => TransactionDefModel.fromMap(res)).toList();
+  }
+
+  Future<List<Map<String, Object?>>> _getTTransactionDef() async {
+    final db = await DatabaseHelper.instance.database;
+    return await db.rawQuery(TransactionDefSelectQueries.getTTransactionDef);
   }
 
   //--------------------------
