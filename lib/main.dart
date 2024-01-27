@@ -9,13 +9,13 @@ Future<void> main() async {
 
 Future<void> testApi() async {
   var api = ApiTest();
-  // await api.testTTransactionDefInsert();
+  await api.testTTransactionDefInsert();
   // await api.testTTransactionDefDelete();
-  // await api.testUpdateTTransactionDefSortOrder();
-  api.testMAccountItem();
-  api.testTJournalItem();
+  await api.testUpdateTTransactionDefSortOrder();
+  // api.testMAccountItem();
+  // api.testTJournalItem();
   api.testTTransactionDef();
-  api.testTJournalTotal();
+  // api.testTJournalTotal();
 }
 
 class MyApp extends StatelessWidget {
