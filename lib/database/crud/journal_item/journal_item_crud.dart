@@ -1,7 +1,9 @@
+import 'package:shiwake_app_v2/database/query/journal_item/journal_item_delete_queries.dart';
 import 'package:shiwake_app_v2/database/query/journal_item/journal_item_insert_queries.dart';
 import 'package:shiwake_app_v2/database/query/journal_item/journal_item_update_queries.dart';
 import 'package:shiwake_app_v2/database/query/journal_total/journal_total_insert_queries.dart';
 import 'package:shiwake_app_v2/utils/list/pair_list.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../../../utils/date/date_util.dart';
 import '../../database_helper.dart';
@@ -15,15 +17,10 @@ class JournalItemCrud {
   // 取得
   //--------------------------
   Future<List<JournalItemModel>> getResult(int limitNum, int offsetNum) async {
-    var result = await _getTJournalItem(limitNum, offsetNum);
-    return result.map((res) => JournalItemModel.fromMap(res)).toList();
-  }
-
-  Future<List<Map<String, dynamic>>> _getTJournalItem(
-      int limitNum, int offsetNum) async {
     final db = await DatabaseHelper.instance.database;
-    return await db.rawQuery(JournalItemSelectQueries.getTJournalItem,
+    var result = await db.rawQuery(JournalItemSelectQueries.getTJournalItem,
         [limitNum * 2, offsetNum * 2]);
+    return result.map((res) => JournalItemModel.fromMap(res)).toList();
   }
 
   //--------------------------
@@ -31,54 +28,63 @@ class JournalItemCrud {
   //--------------------------
   Future<void> insert(
       PairList<JournalItemInsertDto> journalItemInsertDtoList) async {
-    await _insertAndUpdateJournalItem(journalItemInsertDtoList.getList());
+    final db = await DatabaseHelper.instance.database;
+    await db.transaction((txn) async {
+      await _insertAndUpdateJournalItem(
+          journalItemInsertDtoList.getList(), txn);
+    });
   }
 
   //--------------------------
-  // 赤仕訳の登録
+  // 登録・更新
+  // ・赤仕訳の登録・既存レコード更新
   //--------------------------
   Future<void> upsertRedJournal(
       JournalItemUpsertRedJournalDto journalItemUpsertRedJournalDto) async {
-    await _insertAndUpdateJournalItem(
-        journalItemUpsertRedJournalDto.pairList.getList());
-    await _updateDeleteFlg(journalItemUpsertRedJournalDto.deleteJournalId);
+    final db = await DatabaseHelper.instance.database;
+    await db.transaction((txn) async {
+      await _insertAndUpdateJournalItem(
+          journalItemUpsertRedJournalDto.pairList.getList(), txn);
+      await _updateDeleteFlg(
+          journalItemUpsertRedJournalDto.deleteJournalId, txn);
+    });
   }
 
   Future<void> _insertAndUpdateJournalItem(
-      List<JournalItemInsertDto> dtoList) async {
-    final db = await DatabaseHelper.instance.database;
+      List<JournalItemInsertDto> dtoList, Transaction txn) async {
     var currentYm = DateUtil.getCurrentYmAsString();
-    await db.transaction((txn) async {
-      for (var dto in dtoList) {
-        await txn.rawInsert(JournalItemInsertQueries.insertTJournalItem, [
-          dto.journalId,
-          dto.accountId,
-          dto.plusMinusDiv,
-          dto.transactionName,
-          dto.amount,
-          dto.addTime,
-          dto.redFlg,
-          dto.deleteFlg
-        ]);
-        await txn.rawInsert(JournalTotalInsertQueries.insertJournalTotal, [
-          dto.accountId,
-          currentYm,
-          dto.plusMinusDiv == '＋' ? dto.amount : dto.amount * (-1)
-        ]);
-      }
-    });
+    for (var dto in dtoList) {
+      await txn.rawInsert(JournalItemInsertQueries.insertTJournalItem, [
+        dto.journalId,
+        dto.accountId,
+        dto.plusMinusDiv,
+        dto.transactionName,
+        dto.amount,
+        dto.addTime,
+        dto.redFlg,
+        dto.deleteFlg
+      ]);
+      await txn.rawInsert(JournalTotalInsertQueries.insertTJournalTotal, [
+        dto.accountId,
+        currentYm,
+        dto.plusMinusDiv == '＋' ? dto.amount : dto.amount * (-1)
+      ]);
+    }
   }
 
-  Future<void> _updateDeleteFlg(String deleteJournalId) async {
-    final db = await DatabaseHelper.instance.database;
-    await db.transaction((txn) async {
-      await txn.rawUpdate(JournalItemUpdateQueries.updateTJournalItemDeleteFlg,
-          [deleteJournalId]);
-    });
+  Future<void> _updateDeleteFlg(String deleteJournalId, Transaction txn) async {
+    await txn.rawUpdate(JournalItemUpdateQueries.updateTJournalItemDeleteFlg,
+        [deleteJournalId]);
   }
 
   //--------------------------
   // 削除
+  // ・赤仕訳・削除済み仕訳を全て削除
   //--------------------------
-  Future<void> delete() async {}
+  Future<void> delete() async {
+    final db = await DatabaseHelper.instance.database;
+    await db.transaction((txn) async {
+      txn.rawDelete(JournalItemDeleteQueries.deleteTJournalItem);
+    });
+  }
 }

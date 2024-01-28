@@ -32,7 +32,8 @@ class TransactionDefService {
   }
 
   //--------------------------
-  // 順番を更新
+  // 更新
+  // ・２取引定義の順番を入れ替え
   //--------------------------
   Future<void> updateSortOrder(TransactionDefUpdateSortOrderDto transactionDef1,
       TransactionDefUpdateSortOrderDto transactionDef2) async {
