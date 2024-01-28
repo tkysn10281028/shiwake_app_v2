@@ -1,11 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:shiwake_app_v2/api_test.dart';
+import 'package:shiwake_app_v2/utils/file/file_utils.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  testApi();
   runApp(const MyApp());
+}
+
+Future<void> testApi() async {
+  var api = ApiTest();
+  // await api.testTTransactionDefInsert();
+  // await api.testTTransactionDefDelete();
+  // await api.testUpdateTTransactionDefSortOrder();
+  // await api.testTTransactionDef();
+  await api.testTJounalItemInsert();
+  await api.testTJounalItemRedJournalUpsert();
+  await api.testDeleteTJournalItem();
+  await api.testInsertCarryOver();
+  await api.testTJournalItem();
+  await api.testTJournalTotal();
+  // api.testMAccountItem();
+  await FileUtils.getFileSize();
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,6 +42,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
+
   final String title;
 
   @override
