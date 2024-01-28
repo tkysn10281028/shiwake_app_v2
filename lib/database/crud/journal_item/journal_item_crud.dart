@@ -11,6 +11,7 @@ import '../../dto/journal_item/journal_item_insert_dto.dart';
 import '../../dto/journal_item/journal_item_upsert_red_journal_dto.dart';
 import '../../model/journal_item/journal_item_model.dart';
 import '../../query/journal_item/journal_item_select_queries.dart';
+import '../../query/journal_total/journal_total_delete_queries.dart';
 
 class JournalItemCrud {
   //--------------------------
@@ -47,6 +48,7 @@ class JournalItemCrud {
           journalItemUpsertRedJournalDto.pairList.getList(), txn);
       await _updateDeleteFlg(
           journalItemUpsertRedJournalDto.deleteJournalId, txn);
+      await _deleteJournalTotalNoAmount(txn);
     });
   }
 
@@ -75,6 +77,10 @@ class JournalItemCrud {
   Future<void> _updateDeleteFlg(String deleteJournalId, Transaction txn) async {
     await txn.rawUpdate(JournalItemUpdateQueries.updateTJournalItemDeleteFlg,
         [deleteJournalId]);
+  }
+
+  Future<void> _deleteJournalTotalNoAmount(Transaction txn) async {
+    await txn.rawDelete(JournalTotalDeleteQueries.deleteTJournalTotalNoAmount);
   }
 
   //--------------------------
