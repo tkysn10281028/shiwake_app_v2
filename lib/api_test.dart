@@ -35,7 +35,7 @@ class ApiTest {
   Future<void> testTJournalTotal() async {
     var result = await JournalTotalCrud().getResult('202401');
     for (var res in result) {
-      print(res);
+      print("${res.majorItemName}_${res.middleItemName}_${res.amount}");
     }
   }
 
