@@ -17,6 +17,7 @@ Future<void> testApi() async {
   await api.testTJounalItemInsert();
   await api.testTJounalItemRedJournalUpsert();
   await api.testDeleteTJournalItem();
+  await api.testInsertCarryOver();
   await api.testTJournalItem();
   await api.testTJournalTotal();
   // api.testMAccountItem();

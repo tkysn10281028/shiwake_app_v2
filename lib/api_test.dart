@@ -1,10 +1,10 @@
 import 'package:shiwake_app_v2/database/dto/journal_item/journal_item_insert_dto.dart';
 import 'package:shiwake_app_v2/database/dto/journal_item/journal_item_upsert_red_journal_dto.dart';
 import 'package:shiwake_app_v2/database/dto/transaction_def/transaction_def_insert_dto.dart';
+import 'package:shiwake_app_v2/database/service/journal_total/journal_total_service.dart';
 import 'package:shiwake_app_v2/database/service/transaction_def/transaction_def_service.dart';
 import 'package:shiwake_app_v2/utils/date/date_util.dart';
 import 'package:shiwake_app_v2/utils/list/pair_list.dart';
-import 'database/crud/journal_total/journal_total_crud.dart';
 import 'database/dto/transaction_def/transaction_def_update_sort_order_dto.dart';
 import 'database/service/account_item/account_item_service.dart';
 import 'database/service/journal_item/journal_item_service.dart';
@@ -33,9 +33,9 @@ class ApiTest {
   }
 
   Future<void> testTJournalTotal() async {
-    var result = await JournalTotalCrud.getResult('202401');
+    var result = await JournalTotalService().getResult('202401');
     for (var res in result) {
-      print(res);
+      print("${res.majorItemName}_${res.middleItemName}_${res.amount}");
     }
   }
 
@@ -105,5 +105,9 @@ class ApiTest {
 
   Future<void> testDeleteTJournalItem() async {
     await JournalItemService().delete();
+  }
+
+  Future<void> testInsertCarryOver() async {
+    await JournalTotalService().insertCarryOver();
   }
 }
