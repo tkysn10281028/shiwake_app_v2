@@ -15,9 +15,11 @@ Future<void> testApi() async {
   // await api.testUpdateTTransactionDefSortOrder();
   // await api.testTTransactionDef();
   await api.testTJounalItemInsert();
+  await api.testTJounalItemRedJournalUpsert();
+  await api.testDeleteTJournalItem();
   api.testTJournalItem();
   api.testTJournalTotal();
-  api.testMAccountItem();
+  // api.testMAccountItem();
   await FileUtils.getFileSize();
 }
 
