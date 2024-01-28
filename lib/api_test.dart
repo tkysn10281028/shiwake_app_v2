@@ -20,7 +20,8 @@ class ApiTest {
   Future<void> testTJournalItem() async {
     var result = await JournalItemCrud().getResult(3, 0);
     for (var res in result) {
-      print("${res.journalId}_${res.accountId}_${res.transactionName}");
+      print(
+          "${res.journalId}_${res.accountId}_${res.transactionName}_${res.addTime}");
     }
   }
 
