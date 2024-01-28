@@ -33,7 +33,7 @@ class ApiTest {
   }
 
   Future<void> testTJournalTotal() async {
-    var result = await JournalTotalCrud.getResult('202401');
+    var result = await JournalTotalCrud().getResult('202401');
     for (var res in result) {
       print(res);
     }
