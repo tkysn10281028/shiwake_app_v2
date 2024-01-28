@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shiwake_app_v2/api_test.dart';
+import 'package:shiwake_app_v2/utils/file/file_utils.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,8 +17,8 @@ Future<void> testApi() async {
   await api.testTJounalItemInsert();
   api.testTJournalItem();
   api.testTJournalTotal();
-
-  // api.testMAccountItem();
+  api.testMAccountItem();
+  await FileUtils.getFileSize();
 }
 
 class MyApp extends StatelessWidget {
